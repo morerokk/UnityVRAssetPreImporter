@@ -1,6 +1,7 @@
 # VRAssetPreImporter
-A tool for your unity project to automate texture and model imports and settings.  
-!(Preview)[https://i.imgur.com/nH7duT0.png]
+A tool for your unity project to automate texture and model imports and settings.
+
+![Preview](https://i.imgur.com/nH7duT0.png)
 
 ## Features
 Here's what the script can set up for the asset every time you import a model or a texture.
