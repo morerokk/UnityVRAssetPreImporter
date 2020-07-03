@@ -6,7 +6,7 @@ using UnityEngine;
 
 public static class VRCAssetPreImporterSettings
 {
-    public static BlendShapeNormalsMode BlendShapeNormals
+    public static VRCAssetPostProcessorEnums.BlendShapeNormalsMode BlendShapeNormals
     {
         get
         {
@@ -14,31 +14,31 @@ public static class VRCAssetPreImporterSettings
             switch (normalMode)
             {
                 case "default":
-                    return BlendShapeNormalsMode.Default;
+                    return VRCAssetPostProcessorEnums.BlendShapeNormalsMode.Default;
                 case "legacy":
-                    return BlendShapeNormalsMode.Legacy;
+                    return VRCAssetPostProcessorEnums.BlendShapeNormalsMode.Legacy;
                 case "import":
-                    return BlendShapeNormalsMode.Import;
+                    return VRCAssetPostProcessorEnums.BlendShapeNormalsMode.Import;
                 case "none":
-                    return BlendShapeNormalsMode.None;
+                    return VRCAssetPostProcessorEnums.BlendShapeNormalsMode.None;
                 default:
-                    return BlendShapeNormalsMode.Legacy;
+                    return VRCAssetPostProcessorEnums.BlendShapeNormalsMode.Legacy;
             }
         }
         set
         {
             switch (value)
             {
-                case BlendShapeNormalsMode.Default:
+                case VRCAssetPostProcessorEnums.BlendShapeNormalsMode.Default:
                     EditorPrefs.SetString("VRCAssetPreProcessor_BlendShapeNormalsMode", "default");
                     break;
-                case BlendShapeNormalsMode.Legacy:
+                case VRCAssetPostProcessorEnums.BlendShapeNormalsMode.Legacy:
                     EditorPrefs.SetString("VRCAssetPreProcessor_BlendShapeNormalsMode", "legacy");
                     break;
-                case BlendShapeNormalsMode.Import:
+                case VRCAssetPostProcessorEnums.BlendShapeNormalsMode.Import:
                     EditorPrefs.SetString("VRCAssetPreProcessor_BlendShapeNormalsMode", "import");
                     break;
-                case BlendShapeNormalsMode.None:
+                case VRCAssetPostProcessorEnums.BlendShapeNormalsMode.None:
                     EditorPrefs.SetString("VRCAssetPreProcessor_BlendShapeNormalsMode", "none");
                     break;
                 default:
@@ -83,7 +83,7 @@ public static class VRCAssetPreImporterSettings
         }
     }
 
-    public static TextureCompressionQuality TextureCompressionLevel
+    public static VRCAssetPostProcessorEnums.TextureCompressionQuality TextureCompressionLevel
     {
         get
         {
@@ -91,31 +91,31 @@ public static class VRCAssetPreImporterSettings
             switch (textureCompression)
             {
                 case "low":
-                    return TextureCompressionQuality.Low;
+                    return VRCAssetPostProcessorEnums.TextureCompressionQuality.Low;
                 case "normal":
-                    return TextureCompressionQuality.Normal;
+                    return VRCAssetPostProcessorEnums.TextureCompressionQuality.Normal;
                 case "high":
-                    return TextureCompressionQuality.High;
+                    return VRCAssetPostProcessorEnums.TextureCompressionQuality.High;
                 case "none":
-                    return TextureCompressionQuality.None;
+                    return VRCAssetPostProcessorEnums.TextureCompressionQuality.None;
                 default:
-                    return TextureCompressionQuality.Normal;
+                    return VRCAssetPostProcessorEnums.TextureCompressionQuality.Normal;
             }
         }
         set
         {
             switch (value)
             {
-                case TextureCompressionQuality.Low:
+                case VRCAssetPostProcessorEnums.TextureCompressionQuality.Low:
                     EditorPrefs.SetString("VRCAssetPreProcessor_TextureCompressionLevel", "low");
                     break;
-                case TextureCompressionQuality.Normal:
+                case VRCAssetPostProcessorEnums.TextureCompressionQuality.Normal:
                     EditorPrefs.SetString("VRCAssetPreProcessor_TextureCompressionLevel", "normal");
                     break;
-                case TextureCompressionQuality.High:
+                case VRCAssetPostProcessorEnums.TextureCompressionQuality.High:
                     EditorPrefs.SetString("VRCAssetPreProcessor_TextureCompressionLevel", "high");
                     break;
-                case TextureCompressionQuality.None:
+                case VRCAssetPostProcessorEnums.TextureCompressionQuality.None:
                     EditorPrefs.SetString("VRCAssetPreProcessor_TextureCompressionLevel", "none");
                     break;
                 default:
@@ -123,6 +123,96 @@ public static class VRCAssetPreImporterSettings
             }
         }
     }
+
+    public static bool UseCrunch
+    {
+        get
+        {
+            return EditorPrefs.GetBool("VRCAssetPreProcessor_UseCrunch", false);
+        }
+        set
+        {
+            EditorPrefs.SetBool("VRCAssetPreProcessor_UseCrunch", value);
+        }
+    }
+
+    public static bool LinearizeMaps
+    {
+        get
+        {
+            return EditorPrefs.GetBool("VRCAssetPreProcessor_LinearizeMaps", false);
+        }
+        set
+        {
+            EditorPrefs.SetBool("VRCAssetPreProcessor_LinearizeMaps", value);
+        }
+    }
+
+    public static string LinearizationTargetSuffixes
+    {
+        get
+        {
+            return EditorPrefs.GetString("VRCAssetPreProcessor_LinearizationTargetSuffixes", "_rma,_ppc,_mro,_nma,_ao,_sss,_trans,_si,_emis");
+        }
+        set
+        {
+            EditorPrefs.SetString("VRCAssetPreProcessor_LinearizationTargetSuffixes", value);
+        }
+    }
+
+    public static bool SingleColorizeMaps
+    {
+        get
+        {
+            return EditorPrefs.GetBool("VRCAssetPreProcessor_SingleColorizeMaps", false);
+        }
+        set
+        {
+            EditorPrefs.SetBool("VRCAssetPreProcessor_SingleColorizeMaps", value);
+        }
+    }
+
+    public static VRCAssetPostProcessorEnums.SingleColorChannel SingleColorChannel
+    {
+        get
+        {
+            string singleColorChannel = EditorPrefs.GetString("VRCAssetPreProcessor_SingleColorChannel", "red");
+            switch (singleColorChannel) {
+                case "red":
+                    return VRCAssetPostProcessorEnums.SingleColorChannel.Red;
+                case "alpha":
+                    return VRCAssetPostProcessorEnums.SingleColorChannel.Alpha;
+                default:
+                    return VRCAssetPostProcessorEnums.SingleColorChannel.Red;
+            }
+        }
+        set
+        {
+            switch (value) {
+                case VRCAssetPostProcessorEnums.SingleColorChannel.Red:
+                    EditorPrefs.SetString("VRCAssetPreProcessor_SingleColorChannel", "red");
+                break;
+                case VRCAssetPostProcessorEnums.SingleColorChannel.Alpha:
+                    EditorPrefs.SetString("VRCAssetPreProcessor_SingleColorChannel", "alpha");
+                break;
+                default:
+                    throw new ArgumentException("Value must be one of: alpha or red");
+            }
+        }
+    }
+
+    public static string SingleColorTargetSuffixes
+    {
+        get
+        {
+            return EditorPrefs.GetString("VRCAssetPreProcessor_SingleColorTargetSuffixes", "_ao,_trans,_op,_metal,_rough");
+        }
+        set
+        {
+            EditorPrefs.SetString("VRCAssetPreProcessor_SingleColorTargetSuffixes", value);
+        }
+    }
+
 
     public static bool LoggingEnabled
     {
@@ -134,22 +224,5 @@ public static class VRCAssetPreImporterSettings
         {
             EditorPrefs.SetBool("VRCAssetPreProcessor_EnableLogging", value);
         }
-    }
-
-    public enum BlendShapeNormalsMode
-    {
-        Default,
-        Legacy,
-        Import,
-        None
-    }
-
-    // Hacky workaround to show friendlier names in the menu
-    public enum TextureCompressionQuality
-    {
-        None = TextureImporterCompression.Uncompressed,
-        Low = TextureImporterCompression.CompressedLQ,
-        Normal = TextureImporterCompression.Compressed,
-        High = TextureImporterCompression.CompressedHQ
     }
 }

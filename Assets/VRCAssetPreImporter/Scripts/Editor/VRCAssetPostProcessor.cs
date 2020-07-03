@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 using System.IO;
+using System.Linq;
 
 public class VRCAssetPostProcessor : AssetPostprocessor
 {
@@ -15,22 +16,22 @@ public class VRCAssetPostProcessor : AssetPostprocessor
             return;
         }
 
-        if (VRCAssetPreImporterSettings.BlendShapeNormals == VRCAssetPreImporterSettings.BlendShapeNormalsMode.Default)
+        if (VRCAssetPreImporterSettings.BlendShapeNormals == VRCAssetPostProcessorEnums.BlendShapeNormalsMode.Default)
         {
             // Default settings selected, don't do anything
             return;
         }
 
-        LogAction("[VRCAssetPreprocessor] First import of a model, changing import settings.");
+        LogAction("First import of a model, changing import settings.");
 
         ModelImporter modelImporter = assetImporter as ModelImporter;
 
-        if (VRCAssetPreImporterSettings.BlendShapeNormals == VRCAssetPreImporterSettings.BlendShapeNormalsMode.Import)
+        if (VRCAssetPreImporterSettings.BlendShapeNormals == VRCAssetPostProcessorEnums.BlendShapeNormalsMode.Import)
         {
             // Enable import blendshape normals automatically
             modelImporter.importBlendShapeNormals = ModelImporterNormals.Import;
         }
-        else if (VRCAssetPreImporterSettings.BlendShapeNormals == VRCAssetPreImporterSettings.BlendShapeNormalsMode.None)
+        else if (VRCAssetPreImporterSettings.BlendShapeNormals == VRCAssetPostProcessorEnums.BlendShapeNormalsMode.None)
         {
             // Disable blendshape normals automatically
             modelImporter.importBlendShapeNormals = ModelImporterNormals.None;
@@ -51,7 +52,7 @@ public class VRCAssetPostProcessor : AssetPostprocessor
             return;
         }
 
-        LogAction("[VRCAssetPreprocessor] First import of a texture, changing import settings.");
+        LogAction("First import of a texture, changing import settings.");
 
         TextureImporter textureImporter = assetImporter as TextureImporter;
 
@@ -65,14 +66,39 @@ public class VRCAssetPostProcessor : AssetPostprocessor
         textureImporter.alphaIsTransparency = VRCAssetPreImporterSettings.AlphaIsTransparency;
 
         // Set compression quality
-        textureImporter.textureCompression = (TextureImporterCompression)VRCAssetPreImporterSettings.TextureCompressionLevel;
+        textureImporter.textureCompression = (TextureImporterCompression) VRCAssetPreImporterSettings.TextureCompressionLevel;
+
+        textureImporter.crunchedCompression = VRCAssetPreImporterSettings.UseCrunch;
+
+        if (VRCAssetPreImporterSettings.LinearizeMaps) {
+            string[] tokens = VRCAssetPreImporterSettings.LinearizationTargetSuffixes.Split(',');
+            if (tokens.Any(x => Path.GetFileNameWithoutExtension(textureImporter.assetPath).EndsWith(x))) {
+                LogAction("Texture " + Path.GetFileName(textureImporter.assetPath) + " matches linearization filters, applying...");
+                textureImporter.sRGBTexture = false;
+            }
+        }
+
+
+        if (VRCAssetPreImporterSettings.SingleColorizeMaps) {
+            string[] tokens = VRCAssetPreImporterSettings.LinearizationTargetSuffixes.Split(',');
+            if (tokens.Any(x => Path.GetFileNameWithoutExtension(textureImporter.assetPath).EndsWith(x))) {
+                LogAction("Texture " + Path.GetFileName(textureImporter.assetPath) + " matches color filters, applying...");
+
+                textureImporter.textureType = TextureImporterType.SingleChannel;
+
+                TextureImporterSettings tis = new TextureImporterSettings();
+                textureImporter.ReadTextureSettings(tis); //because of course unity can't *return* a value like you'd expect it to
+                tis.singleChannelComponent = (TextureImporterSingleChannelComponent) VRCAssetPreImporterSettings.SingleColorChannel;
+                textureImporter.SetTextureSettings(tis);
+            }
+        }
     }
 
     private void LogAction(string msg)
     {
         if(VRCAssetPreImporterSettings.LoggingEnabled)
         {
-            Debug.Log(msg, assetImporter);
+            Debug.Log("[VRCAssetPreprocessor] " + msg, assetImporter);
         }
     }
 }
